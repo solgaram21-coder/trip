@@ -1,0 +1,2042 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>체험학습 신청</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --primary: #1a5fa8;
+    --primary-dark: #0d4480;
+    --primary-light: #e8f0fb;
+    --success: #2e7d32;
+    --success-light: #e8f5e9;
+    --danger: #c62828;
+    --danger-light: #ffebee;
+    --warning: #ef6c00;
+    --warning-light: #fff8e1;
+    --border: #e0e0e0;
+    --text: #1a1a1a;
+    --text-muted: #666;
+    --bg: #f5f6fa;
+    --card: #ffffff;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  .nav {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-brand {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: -0.3px;
+  }
+
+  .nav-right {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .nav-user {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-right: 4px;
+  }
+
+  .container {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+
+  .form-group { margin-bottom: 14px; }
+
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: inherit;
+    background: #fff;
+    color: var(--text);
+    transition: border-color 0.15s, background-color 0.15s, box-shadow 0.15s;
+  }
+
+  .form-group textarea {
+    min-height: 96px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  .invalid-field {
+    border-color: var(--danger) !important;
+    background: #fff7f7 !important;
+    box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.08);
+  }
+
+  .field-error {
+    display: none;
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--danger);
+    line-height: 1.5;
+    font-weight: 500;
+  }
+
+  .field-error.show {
+    display: block;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text);
+    transition: all 0.15s;
+  }
+
+  .btn:hover { background: var(--bg); }
+  .btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+  .btn-danger { background: var(--danger); color: #fff; border-color: var(--danger); }
+  .btn-danger:hover { background: #b71c1c; }
+  .btn-block { width: 100%; }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .alert {
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+
+  .alert-success {
+    background: var(--success-light);
+    color: var(--success);
+    border: 1px solid #a5d6a7;
+  }
+
+  .alert-error {
+    background: var(--danger-light);
+    color: var(--danger);
+    border: 1px solid #ef9a9a;
+  }
+
+  .alert-info {
+    background: var(--primary-light);
+    color: var(--primary);
+    border: 1px solid #90caf9;
+  }
+
+  .alert-warning {
+    background: var(--warning-light);
+    color: var(--warning);
+    border: 1px solid #ffcc80;
+  }
+
+  .tab-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .tab {
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    background: #fff;
+    color: var(--text-muted);
+    transition: all 0.15s;
+  }
+
+  .tab.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+
+  .tab-sub {
+    font-size: 11px;
+    opacity: 0.85;
+    margin-left: 4px;
+  }
+
+  .prog-card {
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #fff;
+  }
+
+  .prog-card:hover:not(.full):not(.closed) {
+    border-color: var(--primary);
+    background: var(--primary-light);
+  }
+
+  .prog-card.selected {
+    border-color: var(--primary);
+    background: var(--primary-light);
+  }
+
+  .prog-card.full,
+  .prog-card.closed {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .prog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .prog-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .prog-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    line-height: 1.5;
+  }
+
+  .prog-bar-wrap {
+    background: #e0e0e0;
+    border-radius: 4px;
+    height: 6px;
+    margin-top: 6px;
+  }
+
+  .prog-bar {
+    background: var(--primary);
+    border-radius: 4px;
+    height: 6px;
+    transition: width 0.3s;
+  }
+
+  .prog-bar.full,
+  .prog-bar.closed {
+    background: var(--danger);
+  }
+
+  .prog-count-text {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .badge-open { background: var(--success-light); color: var(--success); }
+  .badge-full { background: var(--danger-light); color: var(--danger); }
+  .badge-closed { background: var(--danger-light); color: var(--danger); }
+  .badge-selected { background: var(--primary); color: #fff; }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .info-row:last-child { border-bottom: none; }
+
+  .info-label {
+    color: var(--text-muted);
+    min-width: 90px;
+  }
+
+  .info-value {
+    font-weight: 500;
+    color: var(--text);
+    text-align: right;
+  }
+
+  .info-value-note {
+    font-weight: 500;
+    color: var(--text);
+    text-align: left;
+    white-space: pre-wrap;
+    word-break: break-word;
+    flex: 1;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    text-align: center;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  .table-wrap { overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 1120px;
+  }
+
+  th {
+    background: var(--bg);
+    padding: 9px 10px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg); }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .section-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, #1976d2 100%);
+    border-radius: var(--radius);
+    padding: 40px 24px 36px;
+    margin-bottom: 20px;
+    color: #fff;
+    text-align: center;
+  }
+
+  .hero-title {
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+
+  .hero-sub {
+    font-size: 14px;
+    opacity: 0.9;
+    line-height: 1.8;
+    margin-bottom: 28px;
+  }
+
+  .hero-login-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    color: var(--primary);
+    font-size: 17px;
+    font-weight: 700;
+    padding: 14px 40px;
+    border-radius: 40px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+
+  .hero-login-btn:hover {
+    background: #eef3ff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+  }
+
+  .hero-logged {
+    font-size: 13px;
+    opacity: 0.9;
+    margin-top: 8px;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  .spinner {
+    width: 28px;
+    height: 28px;
+    border: 3px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin: 0 auto 12px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .divider {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .admin-note {
+    white-space: pre-wrap;
+    word-break: break-word;
+    min-width: 180px;
+    max-width: 260px;
+  }
+
+  .config-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+
+  .config-item {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    margin-bottom: 10px;
+    background: #fafafa;
+  }
+
+  .config-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .config-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .muted-text {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 760px) {
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    .config-grid-2 { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 480px) {
+    .nav { padding: 0 14px; height: auto; min-height: 56px; }
+    .hero-title { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">🌿 체험학습 신청</div>
+  <div class="nav-right">
+    <span class="nav-user" id="nav-user"></span>
+    <button class="btn btn-sm" id="btn-mypage" style="display:none" onclick="showPage('mypage')">내 신청</button>
+    <button class="btn btn-sm" id="btn-admin" style="display:none" onclick="showPage('admin')">관리자</button>
+    <button class="btn btn-sm btn-primary" id="btn-login" onclick="showPage('login')">로그인</button>
+    <button class="btn btn-sm" id="btn-logout" style="display:none" onclick="doLogout()">로그아웃</button>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div id="page-home" class="page">
+    <div class="hero">
+      <div class="hero-title">🌿솔가람고등학교 공방 체험학습<br>프로그램 신청</div>
+      <div class="hero-sub">기(期)와 프로그램을 선택하고 신청서를 작성해주세요.<br>각 프로그램은 설정된 정원만큼 선착순 접수되며, 관리자 페이지에서 설정한 마감 기준일에 따라 자동 마감됩니다.</div>
+      <div id="hero-login-area">
+        <button class="hero-login-btn" onclick="showPage('login')">🔐 로그인 / 회원가입</button>
+        <div class="hero-logged">신청하려면 로그인이 필요합니다</div>
+      </div>
+      <div id="hero-logged-area" style="display:none;">
+        <div class="hero-logged" id="hero-logged-msg"></div>
+      </div>
+    </div>
+
+    <div id="home-alert"></div>
+    <div id="home-loading" class="loading"><div class="spinner"></div>데이터 불러오는 중...</div>
+
+    <div id="home-content" style="display:none">
+      <div class="card-title" style="font-size:14px; font-weight:600; margin-bottom:8px; color:var(--text-muted)">▸ 기(期) 선택</div>
+      <div class="tab-row" id="period-tabs"></div>
+
+      <div class="card-title" style="font-size:14px; font-weight:600; margin-bottom:8px; color:var(--text-muted)">▸ 프로그램 선택</div>
+      <div id="program-list"></div>
+
+      <div id="apply-section" style="display:none"></div>
+    </div>
+  </div>
+
+  <div id="page-login" class="page">
+    <div class="section-title">로그인</div>
+    <div class="section-sub">체험학습 신청을 위해 로그인이 필요합니다.</div>
+    <div class="card" style="max-width:380px; margin: 0 auto;">
+      <div class="form-group"><label>이메일</label><input type="email" id="login-email" placeholder="이메일 주소"/></div>
+      <div class="form-group"><label>비밀번호</label><input type="password" id="login-pw" placeholder="비밀번호"/></div>
+      <div id="login-alert"></div>
+      <button class="btn btn-primary btn-block" onclick="doLogin()" style="margin-bottom:10px">로그인</button>
+      <div class="divider">또는</div>
+      <button class="btn btn-block" onclick="showPage('signup')">회원가입</button>
+    </div>
+  </div>
+
+  <div id="page-signup" class="page">
+    <div class="section-title">회원가입</div>
+    <div class="section-sub">이메일과 비밀번호로 계정을 만들어주세요.</div>
+    <div class="card" style="max-width:380px; margin:0 auto;">
+      <div class="form-group"><label>이메일 *</label><input type="email" id="signup-email" placeholder="이메일 주소"/></div>
+      <div class="form-group"><label>비밀번호 * (6자 이상)</label><input type="password" id="signup-pw" placeholder="비밀번호"/></div>
+      <div class="form-group"><label>비밀번호 확인 *</label><input type="password" id="signup-pw2" placeholder="비밀번호 재입력"/></div>
+
+      <div style="border:1px solid var(--border); border-radius:var(--radius-sm); padding:14px; margin-bottom:14px; background:#fafafa;">
+        <div style="font-size:13px; font-weight:700; color:var(--text); margin-bottom:10px;">개인정보 수집·이용 동의 (필수)</div>
+        <div style="font-size:12px; color:var(--text-muted); line-height:1.8; max-height:160px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px; background:#fff; margin-bottom:12px;">
+          이와 관련하여 아래와 같이 귀하의 개인정보를 수집 및 이용 내용을 개인정보보호법 제15조 및 통계법 제33조에 따라 안내드립니다.<br><br>
+          <strong>□ 개인정보의 수집·이용 목적</strong><br>
+          솔가람고등학교 공방 체험학습 신청 접수 및 운영 관리<br><br>
+          <strong>□ 수집 항목</strong><br>
+          성명, 재적교, 연락처, 지역, 기타 문의사항 등<br><br>
+          <strong>□ 개인정보 보유 및 이용 기간</strong><br>
+          2027년 신입생 입학전형 실시 후 1개월 이내 폐기<br><br>
+          ※ 동의를 거부할 수 있으나, 거부 시 공방 체험학습에 참가하실 수 없습니다.
+        </div>
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; font-weight:500; color:var(--text);">
+          <input type="checkbox" id="privacy-agree" style="width:16px; height:16px; accent-color:var(--primary); cursor:pointer; margin:0;"/>
+          위 개인정보 수집·이용에 동의합니다.
+        </label>
+      </div>
+
+      <div id="signup-alert"></div>
+      <button class="btn btn-primary btn-block" onclick="doSignup()" style="margin-bottom:10px">가입하기</button>
+      <button class="btn btn-block" onclick="showPage('login')">로그인으로 돌아가기</button>
+    </div>
+  </div>
+
+  <div id="page-mypage" class="page">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; gap:12px; flex-wrap:wrap;">
+      <div>
+        <div class="section-title">내 신청 내역</div>
+        <div class="section-sub" style="margin-bottom:0">신청 변경 및 취소가 가능합니다.</div>
+      </div>
+      <button class="btn btn-sm" onclick="showPage('home')">신청 페이지</button>
+    </div>
+    <div id="mypage-content"></div>
+  </div>
+
+  <div id="page-edit" class="page">
+    <div class="section-title">신청 정보 변경</div>
+    <div class="section-sub">기(期), 프로그램, 개인정보를 변경할 수 있습니다.</div>
+    <div id="edit-content"></div>
+  </div>
+
+  <div id="page-admin" class="page">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+      <div class="section-title" style="margin-bottom:0">관리자 대시보드</div>
+      <button class="btn btn-sm btn-primary" onclick="downloadCSV()">📥 CSV 다운로드</button>
+    </div>
+
+    <div id="admin-config-editor"></div>
+    <div id="admin-password-box"></div>
+
+    <div class="stat-grid" id="admin-stats"></div>
+    <div class="tab-row" id="admin-period-tabs"></div>
+    <div class="tab-row" id="admin-prog-tabs"></div>
+
+    <div class="card" style="padding:0; overflow:hidden;">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>이름</th>
+              <th>지역</th>
+              <th>소속학교</th>
+              <th>연락처</th>
+              <th>기</th>
+              <th>프로그램</th>
+              <th>기타(문의사항등)</th>
+              <th>신청일</th>
+              <th>관리</th>
+            </tr>
+          </thead>
+          <tbody id="admin-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  getDoc,
+  setDoc,
+  doc,
+  updateDoc,
+  deleteDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD7Yk_Lc3tFbNc0wcygURRbEYYqwOpdCvs",
+  authDomain: "sgrtrip-2ef17.firebaseapp.com",
+  projectId: "sgrtrip-2ef17",
+  storageBucket: "sgrtrip-2ef17.firebasestorage.app",
+  messagingSenderId: "592659361418",
+  appId: "1:592659361418:web:23432003f4571f9d5c4773",
+  measurementId: "G-10MXSNEF7H"
+};
+
+const DEFAULT_CONFIG = {
+  closeDaysBefore: 1,
+  periods: [
+    { id: '1', label: '1기', date: '2026-05-16' },
+    { id: '2', label: '2기', date: '2026-06-13' },
+    { id: '3', label: '3기', date: '2026-09-11' }
+  ],
+  programs: [
+    { id: 'A', name: '식품가공 공방', desc: '제과 제빵 체험', max: 7 },
+    { id: 'B', name: '목공 공방', desc: '도마 만들기', max: 7 },
+    { id: 'C', name: '도예 공방', desc: '키링 만들기', max: 7 }
+  ]
+};
+
+const ADMIN_EMAIL = 'ryurim92@gmail.com';
+const PAGE_NAMES = ['home', 'login', 'signup', 'mypage', 'edit', 'admin'];
+const SAFE_RESTORE_PAGES = ['home', 'login', 'signup', 'mypage', 'admin'];
+const PAGE_STORAGE_KEY = 'fieldtrip_current_page';
+
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+let isAdmin = false;
+let selectedPeriod = '1';
+let selectedProgram = null;
+let allApplications = [];
+let adminPeriodFilter = 'all';
+let adminProgFilter = 'all';
+let appConfig = getDefaultConfig();
+let adminConfigDraft = getDefaultConfig();
+let configLoaded = false;
+
+function getDefaultConfig() {
+  return JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+}
+
+function getProgramCode(index) {
+  return index < 26 ? String.fromCharCode(65 + index) : `P${index + 1}`;
+}
+
+function normalizeConfig(raw) {
+  const next = { closeDaysBefore: 1, periods: [], programs: [] };
+
+  const rawPeriods = Array.isArray(raw?.periods) && raw.periods.length ? raw.periods : DEFAULT_CONFIG.periods;
+  const rawPrograms = Array.isArray(raw?.programs) && raw.programs.length ? raw.programs : DEFAULT_CONFIG.programs;
+  next.closeDaysBefore = Math.max(0, parseInt(raw?.closeDaysBefore, 10) || 0);
+
+  next.periods = rawPeriods.map((period, index) => ({
+    id: String(index + 1),
+    label: String(period?.label || `${index + 1}기`).trim() || `${index + 1}기`,
+    date: String(period?.date || '').slice(0, 10)
+  }));
+
+  next.programs = rawPrograms.map((program, index) => ({
+    id: getProgramCode(index),
+    name: String(program?.name || `프로그램 ${getProgramCode(index)}`).trim() || `프로그램 ${getProgramCode(index)}`,
+    desc: String(program?.desc || '').trim(),
+    max: Math.max(1, parseInt(program?.max, 10) || 7)
+  }));
+
+  return next;
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function csvEscape(value) {
+  const text = String(value ?? '');
+  return `"${text.replace(/"/g, '""')}"`;
+}
+
+function formatPhoneNumber(value) {
+  const digits = String(value || '').replace(/\D/g, '').slice(0, 11);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+}
+
+function isValidPhoneNumber(value) {
+  return /^010-\d{4}-\d{4}$/.test(String(value || ''));
+}
+
+function getApplicationValidationErrors({ name, region, school, phone }) {
+  const errors = {};
+  const allowedRegions = ['광주', '전남', '그외'];
+  const phoneDigits = String(phone || '').replace(/\D/g, '');
+
+  if (!String(name || '').trim()) {
+    errors.name = '이름을 입력해주세요.';
+  }
+
+  if (!String(region || '').trim()) {
+    errors.region = '지역을 선택해주세요.';
+  } else if (!allowedRegions.includes(region)) {
+    errors.region = '지역은 광주, 전남, 그외 중에서 선택해주세요.';
+  }
+
+  if (!String(school || '').trim()) {
+    errors.school = '소속학교를 입력해주세요.';
+  }
+
+  if (!String(phone || '').trim()) {
+    errors.phone = '연락처를 입력해주세요.';
+  } else if (!phoneDigits.startsWith('010')) {
+    errors.phone = '연락처는 010으로 시작해야 합니다.';
+  } else if (phoneDigits.length !== 11) {
+    errors.phone = '연락처는 숫자 11자리를 모두 입력해주세요.';
+  } else if (!isValidPhoneNumber(phone)) {
+    errors.phone = '연락처 형식은 010-1234-1234 입니다.';
+  }
+
+  return errors;
+}
+
+function getFormFieldMap(prefix) {
+  return {
+    name: { inputId: `${prefix}-name`, errorId: `${prefix}-name-error` },
+    region: { inputId: `${prefix}-region`, errorId: `${prefix}-region-error` },
+    school: { inputId: `${prefix}-school`, errorId: `${prefix}-school-error` },
+    phone: { inputId: `${prefix}-phone`, errorId: `${prefix}-phone-error` }
+  };
+}
+
+function clearSingleFieldError(prefix, fieldName) {
+  const map = getFormFieldMap(prefix)[fieldName];
+  if (!map) return;
+
+  const input = document.getElementById(map.inputId);
+  const error = document.getElementById(map.errorId);
+
+  if (input) input.classList.remove('invalid-field');
+  if (error) {
+    error.textContent = '';
+    error.classList.remove('show');
+  }
+
+  const summary = document.getElementById(`${prefix}-form-error`);
+  if (summary) summary.innerHTML = '';
+}
+
+function applyFieldValidation(prefix, errors) {
+  const fieldMap = getFormFieldMap(prefix);
+  let hasError = false;
+
+  Object.entries(fieldMap).forEach(([fieldName, ids]) => {
+    const input = document.getElementById(ids.inputId);
+    const errorEl = document.getElementById(ids.errorId);
+    const message = errors[fieldName] || '';
+
+    if (input) {
+      if (message) input.classList.add('invalid-field');
+      else input.classList.remove('invalid-field');
+    }
+
+    if (errorEl) {
+      if (message) {
+        errorEl.textContent = message;
+        errorEl.classList.add('show');
+        hasError = true;
+      } else {
+        errorEl.textContent = '';
+        errorEl.classList.remove('show');
+      }
+    }
+  });
+
+  const summary = document.getElementById(`${prefix}-form-error`);
+  if (summary) {
+    summary.innerHTML = hasError
+      ? `<div class="alert alert-error">빨간색으로 표시된 항목을 확인해주세요.</div>`
+      : '';
+  }
+
+  return hasError;
+}
+
+function attachFieldRecoveryHandlers(scope, prefix) {
+  const fieldMap = getFormFieldMap(prefix);
+
+  Object.entries(fieldMap).forEach(([fieldName, ids]) => {
+    const input = scope.querySelector(`#${ids.inputId}`);
+    if (!input) return;
+    if (input.dataset.recoveryBound === '1') return;
+
+    input.dataset.recoveryBound = '1';
+
+    const handler = () => clearSingleFieldError(prefix, fieldName);
+
+    input.addEventListener('input', handler);
+    input.addEventListener('change', handler);
+  });
+}
+
+function attachPhoneFormatter(scope = document) {
+  const targets = scope.querySelectorAll('#f-phone, #e-phone');
+
+  targets.forEach(input => {
+    if (input.dataset.phoneBound === '1') return;
+
+    input.dataset.phoneBound = '1';
+    input.setAttribute('inputmode', 'numeric');
+    input.setAttribute('maxlength', '13');
+    input.setAttribute('autocomplete', 'tel');
+
+    input.addEventListener('input', (e) => {
+      e.target.value = formatPhoneNumber(e.target.value);
+    });
+
+    input.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const pasted = (e.clipboardData || window.clipboardData).getData('text');
+      e.target.value = formatPhoneNumber(pasted);
+    });
+
+    input.addEventListener('keydown', (e) => {
+      const allowKeys = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End'];
+      if (allowKeys.includes(e.key)) return;
+      if (/^\d$/.test(e.key)) return;
+      e.preventDefault();
+    });
+
+    input.value = formatPhoneNumber(input.value);
+  });
+}
+
+function formatDisplayDate(dateStr) {
+  if (!dateStr) return '날짜 미설정';
+  const date = new Date(dateStr + 'T00:00:00');
+  if (Number.isNaN(date.getTime())) return dateStr;
+  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+}
+
+function getCloseDaysBefore() {
+  return Math.max(0, parseInt(appConfig?.closeDaysBefore, 10) || 0);
+}
+
+function subtractDays(dateStr, days) {
+  if (!dateStr) return null;
+  const date = new Date(dateStr + 'T00:00:00');
+  if (Number.isNaN(date.getTime())) return null;
+  date.setDate(date.getDate() - days);
+  return date;
+}
+
+function formatDateObject(date) {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return '날짜 미설정';
+  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+}
+
+function getCloseStartDate(periodId) {
+  const period = getPeriodById(periodId);
+  if (!period?.date) return null;
+  return subtractDays(period.date, getCloseDaysBefore());
+}
+
+function getCloseStartDateText(periodId) {
+  const date = getCloseStartDate(periodId);
+  return date ? formatDateObject(date) : '날짜 미설정';
+}
+
+function isDatePassed(dateStr) {
+  if (!dateStr) return false;
+  const target = new Date(dateStr + 'T00:00:00');
+  if (Number.isNaN(target.getTime())) return false;
+
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  return today > target;
+}
+
+function getPeriods() {
+  return appConfig.periods || [];
+}
+
+function getPrograms() {
+  return appConfig.programs || [];
+}
+
+function getPeriodById(id) {
+  return getPeriods().find(period => period.id === id) || null;
+}
+
+function getProgramById(id) {
+  return getPrograms().find(program => program.id === id) || null;
+}
+
+function isPeriodClosed(periodId) {
+  const period = getPeriodById(periodId);
+  if (!period?.date) return true;
+
+  const closeDate = getCloseStartDate(periodId);
+  if (!closeDate) return true;
+
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  return today >= closeDate;
+}
+
+async function ensureConfigLoaded(force = false) {
+  if (configLoaded && !force) return;
+
+  const snap = await getDoc(doc(db, 'siteConfig', 'main'));
+  appConfig = normalizeConfig(snap.exists() ? snap.data() : DEFAULT_CONFIG);
+  adminConfigDraft = JSON.parse(JSON.stringify(appConfig));
+  configLoaded = true;
+
+  if (!getPeriodById(selectedPeriod)) selectedPeriod = getPeriods()[0]?.id || '1';
+  if (selectedProgram && !getProgramById(selectedProgram)) selectedProgram = null;
+  if (adminPeriodFilter !== 'all' && !getPeriodById(adminPeriodFilter)) adminPeriodFilter = 'all';
+  if (adminProgFilter !== 'all' && !getProgramById(adminProgFilter)) adminProgFilter = 'all';
+}
+
+function getSavedPage() {
+  const hashPage = location.hash.replace('#', '');
+  let page = PAGE_NAMES.includes(hashPage)
+    ? hashPage
+    : sessionStorage.getItem(PAGE_STORAGE_KEY) || 'home';
+
+  if (page === 'edit') page = 'mypage';
+  if (!SAFE_RESTORE_PAGES.includes(page)) page = 'home';
+  return page;
+}
+
+function saveCurrentPage(name) {
+  sessionStorage.setItem(PAGE_STORAGE_KEY, name);
+  const nextHash = '#' + name;
+  if (location.hash !== nextHash) {
+    history.replaceState(null, '', nextHash);
+  }
+}
+
+window.showPage = async function(name, shouldSave = true) {
+  if (!PAGE_NAMES.includes(name)) name = 'home';
+
+  if ((name === 'mypage' || name === 'edit') && !currentUser) {
+    name = 'login';
+  }
+
+  if (name === 'admin' && !isAdmin) {
+    name = currentUser ? 'home' : 'login';
+  }
+
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pageEl = document.getElementById('page-' + name);
+  if (!pageEl) return;
+  pageEl.classList.add('active');
+
+  if (shouldSave) saveCurrentPage(name);
+
+  if (name === 'home') await initHome();
+  if (name === 'mypage') await renderMypage();
+  if (name === 'admin') await initAdmin();
+};
+
+window.addEventListener('hashchange', () => {
+  const pageFromHash = location.hash.replace('#', '');
+  if (PAGE_NAMES.includes(pageFromHash)) {
+    window.showPage(pageFromHash, false);
+  }
+});
+
+function updateNav() {
+  const u = currentUser;
+  document.getElementById('btn-login').style.display = u ? 'none' : '';
+  document.getElementById('btn-logout').style.display = u ? '' : 'none';
+  document.getElementById('btn-mypage').style.display = (u && !isAdmin) ? '' : 'none';
+  document.getElementById('btn-admin').style.display = isAdmin ? '' : 'none';
+  document.getElementById('nav-user').textContent = u ? u.email.split('@')[0] + '님' : '';
+
+  const heroLogin = document.getElementById('hero-login-area');
+  const heroLogged = document.getElementById('hero-logged-area');
+  const heroMsg = document.getElementById('hero-logged-msg');
+
+  if (heroLogin && heroLogged && heroMsg) {
+    if (u) {
+      heroLogin.style.display = 'none';
+      heroLogged.style.display = '';
+      heroMsg.textContent = '✅ ' + u.email.split('@')[0] + '님, 환영합니다!';
+    } else {
+      heroLogin.style.display = '';
+      heroLogged.style.display = 'none';
+    }
+  }
+}
+
+onAuthStateChanged(auth, async user => {
+  currentUser = user;
+  isAdmin = user ? user.email === ADMIN_EMAIL : false;
+  updateNav();
+
+  const currentPageEl = document.querySelector('.page.active');
+  if (!currentPageEl) return;
+
+  if (currentPageEl.id === 'page-home') await initHome();
+  if (currentPageEl.id === 'page-mypage') await renderMypage();
+  if (currentPageEl.id === 'page-admin' && isAdmin) await initAdmin();
+  if (currentPageEl.id === 'page-admin' && !isAdmin) window.showPage(user ? 'home' : 'login');
+  if ((currentPageEl.id === 'page-mypage' || currentPageEl.id === 'page-edit') && !user) window.showPage('login');
+});
+
+window.doLogin = async function() {
+  const email = document.getElementById('login-email').value.trim();
+  const pw = document.getElementById('login-pw').value;
+  const al = document.getElementById('login-alert');
+
+  try {
+    await signInWithEmailAndPassword(auth, email, pw);
+    al.innerHTML = '';
+    if (email === ADMIN_EMAIL) window.showPage('admin');
+    else window.showPage('home');
+  } catch (e) {
+    al.innerHTML = `<div class="alert alert-error">이메일 또는 비밀번호를 확인해주세요.</div>`;
+  }
+};
+
+window.doSignup = async function() {
+  const email = document.getElementById('signup-email').value.trim();
+  const pw = document.getElementById('signup-pw').value;
+  const pw2 = document.getElementById('signup-pw2').value;
+  const al = document.getElementById('signup-alert');
+
+  if (!document.getElementById('privacy-agree').checked) {
+    al.innerHTML = `<div class="alert alert-error">개인정보 수집·이용에 동의해주세요.</div>`;
+    return;
+  }
+
+  if (pw !== pw2) {
+    al.innerHTML = `<div class="alert alert-error">비밀번호가 일치하지 않습니다.</div>`;
+    return;
+  }
+
+  try {
+    await createUserWithEmailAndPassword(auth, email, pw);
+    al.innerHTML = `<div class="alert alert-success">가입 완료! 로그인되었습니다.</div>`;
+    setTimeout(() => window.showPage('home'), 800);
+  } catch (e) {
+    const msg = e.code === 'auth/email-already-in-use'
+      ? '이미 사용 중인 이메일입니다.'
+      : e.code === 'auth/weak-password'
+      ? '비밀번호는 6자 이상이어야 합니다.'
+      : '오류가 발생했습니다.';
+    al.innerHTML = `<div class="alert alert-error">${msg}</div>`;
+  }
+};
+
+window.doLogout = async function() {
+  await signOut(auth);
+  window.showPage('home');
+};
+
+async function loadApplications() {
+  const snap = await getDocs(collection(db, 'applications'));
+  allApplications = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+function getCount(periodId, progId) {
+  return allApplications.filter(app => app.periodId === periodId && app.progId === progId).length;
+}
+
+function isFull(periodId, progId) {
+  const program = getProgramById(progId);
+  if (!program) return true;
+  return getCount(periodId, progId) >= program.max;
+}
+
+function getUserApp() {
+  if (!currentUser) return null;
+  return allApplications.find(app => app.userId === currentUser.uid) || null;
+}
+
+async function initHome() {
+  await ensureConfigLoaded();
+
+  document.getElementById('home-loading').style.display = 'block';
+  document.getElementById('home-content').style.display = 'none';
+
+  await loadApplications();
+
+  document.getElementById('home-loading').style.display = 'none';
+  document.getElementById('home-content').style.display = 'block';
+
+  renderPeriodTabs();
+  renderPrograms();
+}
+
+function renderPeriodTabs() {
+  const tabs = getPeriods().map(period => {
+    const closed = isPeriodClosed(period.id);
+    return `
+      <div class="tab ${selectedPeriod === period.id ? 'active' : ''}" onclick="selectPeriod('${period.id}')">
+        ${escapeHtml(period.label)}
+        <span class="tab-sub">체험일 ${formatDisplayDate(period.date)} · 접수마감 ${getCloseStartDateText(period.id)}${closed ? ' · 마감' : ''}</span>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('period-tabs').innerHTML = tabs || `<div class="alert alert-warning">설정된 기수가 없습니다.</div>`;
+}
+
+window.selectPeriod = function(id) {
+  selectedPeriod = id;
+  selectedProgram = null;
+  renderPeriodTabs();
+  renderPrograms();
+};
+
+function renderPrograms() {
+  const userApp = getUserApp();
+  const al = document.getElementById('home-alert');
+  const period = getPeriodById(selectedPeriod);
+  const periodClosed = period ? isPeriodClosed(period.id) : true;
+
+  if (userApp) {
+    const userPeriod = getPeriodById(userApp.periodId);
+    const userProgram = getProgramById(userApp.progId);
+    al.innerHTML = `<div class="alert alert-success">✅ 신청 완료: ${userPeriod?.label || '-'} - ${userProgram ? userProgram.id + ' (' + userProgram.name + ')' : '-'}
+      <button class="btn btn-sm" onclick="showPage('mypage')" style="margin-left:8px;">내역 보기</button></div>`;
+  } else if (periodClosed) {
+    al.innerHTML = `<div class="alert alert-warning">선택한 ${escapeHtml(period?.label || '')}는 접수 마감일(${getCloseStartDateText(period?.id)})이 되어 신청이 마감되었습니다.</div>`;
+  } else {
+    al.innerHTML = '';
+  }
+
+  const programsHtml = getPrograms().map(program => {
+    const count = getCount(selectedPeriod, program.id);
+    const full = count >= program.max;
+    const closed = periodClosed;
+    const pct = program.max > 0 ? Math.min(100, Math.round((count / program.max) * 100)) : 0;
+    const selected = selectedProgram === program.id;
+
+    let badge = '<span class="badge badge-open">신청 가능</span>';
+    if (selected) badge = '<span class="badge badge-selected">선택됨</span>';
+    if (full) badge = '<span class="badge badge-full">정원 마감</span>';
+    if (closed) badge = '<span class="badge badge-closed">기간 마감</span>';
+
+    return `
+      <div class="prog-card ${selected ? 'selected' : ''} ${full ? 'full' : ''} ${closed ? 'closed' : ''}" onclick="selectProgram('${program.id}', ${full}, ${closed})">
+        <div class="prog-header">
+          <div>
+            <div class="prog-name">프로그램 ${program.id}: ${escapeHtml(program.name)}</div>
+            <div class="prog-desc">${escapeHtml(program.desc || '설명 없음')}</div>
+          </div>
+          <div>${badge}</div>
+        </div>
+        <div class="prog-bar-wrap"><div class="prog-bar ${full || closed ? 'full' : ''}" style="width:${pct}%"></div></div>
+        <div class="prog-count-text">${count} / ${program.max}명 신청</div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('program-list').innerHTML = programsHtml || `<div class="alert alert-warning">설정된 프로그램이 없습니다.</div>`;
+
+  const applySection = document.getElementById('apply-section');
+
+  if (selectedProgram && !userApp) {
+    if (periodClosed) {
+      applySection.innerHTML = `<div class="alert alert-warning">해당 기수는 접수 마감일(${getCloseStartDateText(selectedPeriod)})이 되어 신청이 마감되었습니다.</div>`;
+      applySection.style.display = '';
+      return;
+    }
+
+    if (!currentUser) {
+      applySection.innerHTML = `<div class="alert alert-info">신청하려면 <button class="btn btn-sm btn-primary" onclick="showPage('login')">로그인</button> 이 필요합니다.</div>`;
+      applySection.style.display = '';
+    } else {
+      applySection.innerHTML = `
+        <div class="card">
+          <div class="card-title">신청자 정보</div>
+
+          <div class="form-group">
+            <label>이름 *</label>
+            <input type="text" id="f-name" placeholder="홍길동"/>
+            <div class="field-error" id="f-name-error"></div>
+          </div>
+
+          <div class="form-group">
+            <label>지역 *</label>
+            <select id="f-region">
+              <option value="">선택하세요</option>
+              <option value="광주">광주</option>
+              <option value="전남">전남</option>
+              <option value="그외">그외</option>
+            </select>
+            <div class="field-error" id="f-region-error"></div>
+          </div>
+
+          <div class="form-group">
+            <label>소속학교 *</label>
+            <input type="text" id="f-school" placeholder="OO중학교"/>
+            <div class="field-error" id="f-school-error"></div>
+          </div>
+
+          <div class="form-group">
+            <label>연락처 *</label>
+            <input type="text" id="f-phone" placeholder="010-0000-0000" inputmode="numeric" maxlength="13"/>
+            <div class="field-error" id="f-phone-error"></div>
+          </div>
+
+          <div class="form-group">
+            <label>기타(문의사항등)</label>
+            <textarea id="f-etcNote" placeholder="문의사항이나 전달할 내용을 입력해주세요. (선택)"></textarea>
+          </div>
+
+          <div id="f-form-error"></div>
+          <button class="btn btn-primary btn-block" onclick="submitApplication()">신청하기</button>
+        </div>
+      `;
+      attachPhoneFormatter(applySection);
+      attachFieldRecoveryHandlers(applySection, 'f');
+      applySection.style.display = '';
+    }
+  } else {
+    applySection.style.display = 'none';
+  }
+}
+
+window.selectProgram = function(id, full, closed) {
+  if (full || closed || getUserApp()) return;
+  selectedProgram = id;
+  renderPrograms();
+};
+
+window.submitApplication = async function() {
+  const name = document.getElementById('f-name').value.trim();
+  const region = document.getElementById('f-region').value;
+  const school = document.getElementById('f-school').value.trim();
+  const phone = document.getElementById('f-phone').value.trim();
+  const etcNote = document.getElementById('f-etcNote').value.trim();
+  const al = document.getElementById('home-alert');
+
+  const errors = getApplicationValidationErrors({ name, region, school, phone });
+  const hasValidationError = applyFieldValidation('f', errors);
+  if (hasValidationError) return;
+
+  if (isPeriodClosed(selectedPeriod)) {
+    al.innerHTML = `<div class="alert alert-error">선택한 기수는 접수 기간이 종료되었습니다.</div>`;
+    return;
+  }
+
+  if (isFull(selectedPeriod, selectedProgram)) {
+    al.innerHTML = `<div class="alert alert-error">선택한 프로그램이 방금 마감되었습니다.</div>`;
+    return;
+  }
+
+  const btn = document.querySelector('#apply-section button');
+  btn.disabled = true;
+  btn.textContent = '처리 중...';
+
+  try {
+    await addDoc(collection(db, 'applications'), {
+      userId: currentUser.uid,
+      name,
+      region,
+      school,
+      phone,
+      etcNote,
+      periodId: selectedPeriod,
+      progId: selectedProgram,
+      createdAt: serverTimestamp()
+    });
+
+    selectedProgram = null;
+    await initHome();
+  } catch (e) {
+    al.innerHTML = `<div class="alert alert-error">오류가 발생했습니다. 다시 시도해주세요.</div>`;
+    btn.disabled = false;
+    btn.textContent = '신청하기';
+  }
+};
+
+async function renderMypage() {
+  await ensureConfigLoaded();
+
+  const content = document.getElementById('mypage-content');
+
+  if (!currentUser) {
+    content.innerHTML = `<div class="alert alert-info">로그인이 필요합니다.</div>`;
+    return;
+  }
+
+  content.innerHTML = `<div class="loading"><div class="spinner"></div>불러오는 중...</div>`;
+  await loadApplications();
+
+  const appItem = getUserApp();
+
+  if (!appItem) {
+    content.innerHTML = `<div class="card"><p style="color:var(--text-muted);font-size:14px;margin-bottom:14px">신청 내역이 없습니다.</p>
+      <button class="btn btn-primary btn-sm" onclick="showPage('home')">신청하러 가기</button></div>`;
+    return;
+  }
+
+  const period = getPeriodById(appItem.periodId);
+  const program = getProgramById(appItem.progId);
+  const date = appItem.createdAt ? new Date(appItem.createdAt.seconds * 1000).toLocaleDateString('ko-KR') : '-';
+  const etcNoteHtml = appItem.etcNote ? escapeHtml(appItem.etcNote) : '-';
+  const closed = isPeriodClosed(appItem.periodId);
+
+  content.innerHTML = `
+    ${closed ? `<div class="alert alert-warning">접수 마감된 기수는 변경 및 취소가 제한됩니다.</div>` : ''}
+    <div class="card">
+      <div class="card-title">신청 정보</div>
+      <div class="info-row"><span class="info-label">기(期)</span><span class="info-value">${period ? escapeHtml(period.label) + ' (' + formatDisplayDate(period.date) + ')' : '-'}</span></div>
+      <div class="info-row"><span class="info-label">프로그램</span><span class="info-value">${program ? '프로그램 ' + program.id + ': ' + escapeHtml(program.name) : '-'}</span></div>
+      <div class="info-row"><span class="info-label">이름</span><span class="info-value">${escapeHtml(appItem.name)}</span></div>
+      <div class="info-row"><span class="info-label">지역</span><span class="info-value">${escapeHtml(appItem.region)}</span></div>
+      <div class="info-row"><span class="info-label">소속학교</span><span class="info-value">${escapeHtml(appItem.school)}</span></div>
+      <div class="info-row"><span class="info-label">연락처</span><span class="info-value">${escapeHtml(appItem.phone)}</span></div>
+      <div class="info-row"><span class="info-label">기타</span><span class="info-value-note">${etcNoteHtml}</span></div>
+      <div class="info-row"><span class="info-label">신청일</span><span class="info-value">${date}</span></div>
+      <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm" onclick="showEditPage('${appItem.id}')" ${closed ? 'disabled' : ''}>변경하기</button>
+        <button class="btn btn-danger btn-sm" onclick="cancelApp('${appItem.id}')" ${closed ? 'disabled' : ''}>신청 취소</button>
+      </div>
+    </div>
+  `;
+}
+
+window.cancelApp = async function(docId) {
+  const appItem = allApplications.find(a => a.id === docId);
+  if (appItem && isPeriodClosed(appItem.periodId)) {
+    alert('접수 마감된 기수는 취소할 수 없습니다.');
+    return;
+  }
+
+  if (!confirm('정말로 신청을 취소하시겠습니까?')) return;
+  await deleteDoc(doc(db, 'applications', docId));
+  await renderMypage();
+};
+
+window.showEditPage = async function(docId) {
+  await ensureConfigLoaded();
+
+  const appItem = allApplications.find(a => a.id === docId);
+  if (!appItem) return;
+
+  if (isPeriodClosed(appItem.periodId)) {
+    alert('접수 마감된 기수는 변경할 수 없습니다.');
+    return;
+  }
+
+  const periodOptions = getPeriods().map(period => `
+    <option value="${period.id}" ${appItem.periodId === period.id ? 'selected' : ''} ${isPeriodClosed(period.id) ? 'disabled' : ''}>
+      ${escapeHtml(period.label)} (체험일 ${formatDisplayDate(period.date)} / 접수마감 ${getCloseStartDateText(period.id)})${isPeriodClosed(period.id) ? ' - 마감' : ''}
+    </option>
+  `).join('');
+
+  const programOptions = getPrograms().map(program => `
+    <option value="${program.id}" ${appItem.progId === program.id ? 'selected' : ''}>
+      프로그램 ${program.id}: ${escapeHtml(program.name)}
+    </option>
+  `).join('');
+
+  document.getElementById('edit-content').innerHTML = `
+    <div class="card" style="max-width:560px">
+      <div class="form-group">
+        <label>기(期) *</label>
+        <select id="e-period">${periodOptions}</select>
+      </div>
+
+      <div class="form-group">
+        <label>프로그램 *</label>
+        <select id="e-prog">${programOptions}</select>
+      </div>
+
+      <div class="form-group">
+        <label>이름 *</label>
+        <input type="text" id="e-name" value="${escapeHtml(appItem.name)}"/>
+        <div class="field-error" id="e-name-error"></div>
+      </div>
+
+      <div class="form-group">
+        <label>지역 *</label>
+        <select id="e-region">
+          <option value="광주" ${appItem.region === '광주' ? 'selected' : ''}>광주</option>
+          <option value="전남" ${appItem.region === '전남' ? 'selected' : ''}>전남</option>
+          <option value="그외" ${appItem.region === '그외' ? 'selected' : ''}>그외</option>
+        </select>
+        <div class="field-error" id="e-region-error"></div>
+      </div>
+
+      <div class="form-group">
+        <label>소속학교 *</label>
+        <input type="text" id="e-school" value="${escapeHtml(appItem.school)}"/>
+        <div class="field-error" id="e-school-error"></div>
+      </div>
+
+      <div class="form-group">
+        <label>연락처 *</label>
+        <input type="text" id="e-phone" value="${formatPhoneNumber(appItem.phone)}" inputmode="numeric" maxlength="13"/>
+        <div class="field-error" id="e-phone-error"></div>
+      </div>
+
+      <div class="form-group">
+        <label>기타(문의사항등)</label>
+        <textarea id="e-etcNote" placeholder="문의사항이나 전달할 내용을 입력해주세요. (선택)">${escapeHtml(appItem.etcNote || '')}</textarea>
+      </div>
+
+      <div id="e-form-error"></div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-primary" style="flex:1" onclick="saveEdit('${docId}')">저장하기</button>
+        <button class="btn" style="flex:1" onclick="showPage('mypage')">취소</button>
+      </div>
+    </div>
+  `;
+
+  attachPhoneFormatter(document.getElementById('edit-content'));
+  attachFieldRecoveryHandlers(document.getElementById('edit-content'), 'e');
+  window.showPage('edit');
+};
+
+window.saveEdit = async function(docId) {
+  const periodId = document.getElementById('e-period').value;
+  const progId = document.getElementById('e-prog').value;
+  const name = document.getElementById('e-name').value.trim();
+  const region = document.getElementById('e-region').value;
+  const school = document.getElementById('e-school').value.trim();
+  const phone = document.getElementById('e-phone').value.trim();
+  const etcNote = document.getElementById('e-etcNote').value.trim();
+
+  const errors = getApplicationValidationErrors({ name, region, school, phone });
+  const hasValidationError = applyFieldValidation('e', errors);
+  if (hasValidationError) return;
+
+  const formErrorBox = document.getElementById('e-form-error');
+
+  if (isPeriodClosed(periodId)) {
+    if (formErrorBox) formErrorBox.innerHTML = `<div class="alert alert-error">접수 마감된 기수는 선택할 수 없습니다.</div>`;
+    return;
+  }
+
+  const currentApp = allApplications.find(a => a.id === docId);
+  if (periodId !== currentApp.periodId || progId !== currentApp.progId) {
+    const others = allApplications.filter(a => a.id !== docId && a.periodId === periodId && a.progId === progId);
+    const program = getProgramById(progId);
+    if (others.length >= (program?.max || 0)) {
+      if (formErrorBox) formErrorBox.innerHTML = `<div class="alert alert-error">선택한 프로그램이 마감되었습니다.</div>`;
+      return;
+    }
+  }
+
+  await updateDoc(doc(db, 'applications', docId), {
+    periodId,
+    progId,
+    name,
+    region,
+    school,
+    phone,
+    etcNote
+  });
+
+  await renderMypage();
+  window.showPage('mypage');
+};
+
+function syncAdminDraftFromInputs() {
+  const periodCount = adminConfigDraft.periods.length;
+  const programCount = adminConfigDraft.programs.length;
+  const closeDaysBeforeEl = document.getElementById('cfg-close-days-before');
+
+  if (closeDaysBeforeEl) {
+    adminConfigDraft.closeDaysBefore = Math.max(0, parseInt(closeDaysBeforeEl.value, 10) || 0);
+  }
+
+  for (let i = 0; i < periodCount; i++) {
+    const labelEl = document.getElementById(`cfg-period-label-${i}`);
+    const dateEl = document.getElementById(`cfg-period-date-${i}`);
+    if (labelEl) adminConfigDraft.periods[i].label = labelEl.value.trim();
+    if (dateEl) adminConfigDraft.periods[i].date = dateEl.value;
+  }
+
+  for (let i = 0; i < programCount; i++) {
+    const nameEl = document.getElementById(`cfg-program-name-${i}`);
+    const descEl = document.getElementById(`cfg-program-desc-${i}`);
+    const maxEl = document.getElementById(`cfg-program-max-${i}`);
+
+    if (nameEl) adminConfigDraft.programs[i].name = nameEl.value.trim();
+    if (descEl) adminConfigDraft.programs[i].desc = descEl.value.trim();
+    if (maxEl) adminConfigDraft.programs[i].max = Math.max(1, parseInt(maxEl.value, 10) || 7);
+  }
+}
+
+function resizePeriods(count) {
+  const next = [];
+  for (let i = 0; i < count; i++) {
+    const existing = adminConfigDraft.periods[i] || {};
+    next.push({
+      id: String(i + 1),
+      label: existing.label || `${i + 1}기`,
+      date: existing.date || ''
+    });
+  }
+  adminConfigDraft.periods = next;
+}
+
+function resizePrograms(count) {
+  const next = [];
+  for (let i = 0; i < count; i++) {
+    const existing = adminConfigDraft.programs[i] || {};
+    next.push({
+      id: getProgramCode(i),
+      name: existing.name || `프로그램 ${getProgramCode(i)}`,
+      desc: existing.desc || '',
+      max: Math.max(1, parseInt(existing.max, 10) || 7)
+    });
+  }
+  adminConfigDraft.programs = next;
+}
+
+function renderAdminConfigEditor() {
+  const root = document.getElementById('admin-config-editor');
+  const periodCount = adminConfigDraft.periods.length;
+  const programCount = adminConfigDraft.programs.length;
+
+  root.innerHTML = `
+    <div class="card">
+      <div class="card-title">운영 설정</div>
+      <div id="admin-config-alert"></div>
+
+      <div class="config-section-title">접수 마감 설정</div>
+      <div class="config-grid-2" style="margin-bottom:18px;">
+        <div class="form-group">
+          <label>체험일 기준 접수 마감 시작일</label>
+          <input type="number" id="cfg-close-days-before" min="0" max="365" value="${adminConfigDraft.closeDaysBefore ?? 1}" />
+        </div>
+        <div class="form-group" style="display:flex;align-items:flex-end;">
+          <div class="muted-text">0 입력: 체험일 당일부터 마감<br>1 입력: 체험일 1일 전부터 마감<br>14 입력: 체험일 14일 전부터 마감</div>
+        </div>
+      </div>
+
+      <div class="config-section-title">기수 설정</div>
+      <div class="config-grid-2" style="margin-bottom:12px;">
+        <div class="form-group">
+          <label>기수 개수</label>
+          <input type="number" id="cfg-period-count" min="1" max="12" value="${periodCount}" />
+        </div>
+        <div class="form-group" style="display:flex;align-items:flex-end;">
+          <button class="btn" onclick="updateAdminPeriodCount()">기수 개수 적용</button>
+        </div>
+      </div>
+
+      <div id="cfg-period-list">
+        ${adminConfigDraft.periods.map((period, i) => `
+          <div class="config-item">
+            <div class="config-section-title">기수 ${i + 1}</div>
+            <div class="config-grid-2">
+              <div class="form-group">
+                <label>기수 이름</label>
+                <input type="text" id="cfg-period-label-${i}" value="${escapeHtml(period.label)}" placeholder="${i + 1}기" />
+              </div>
+              <div class="form-group">
+                <label>체험일</label>
+                <input type="date" id="cfg-period-date-${i}" value="${escapeHtml(period.date)}" />
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="config-section-title" style="margin-top:18px;">프로그램 설정</div>
+      <div class="config-grid-2" style="margin-bottom:12px;">
+        <div class="form-group">
+          <label>프로그램 개수</label>
+          <input type="number" id="cfg-program-count" min="1" max="12" value="${programCount}" />
+        </div>
+        <div class="form-group" style="display:flex;align-items:flex-end;">
+          <button class="btn" onclick="updateAdminProgramCount()">프로그램 개수 적용</button>
+        </div>
+      </div>
+
+      <div id="cfg-program-list">
+        ${adminConfigDraft.programs.map((program, i) => `
+          <div class="config-item">
+            <div class="config-section-title">프로그램 ${program.id}</div>
+            <div class="form-group">
+              <label>프로그램 제목</label>
+              <input type="text" id="cfg-program-name-${i}" value="${escapeHtml(program.name)}" placeholder="프로그램 제목" />
+            </div>
+            <div class="form-group">
+              <label>프로그램 내용</label>
+              <textarea id="cfg-program-desc-${i}" placeholder="프로그램 설명">${escapeHtml(program.desc)}</textarea>
+            </div>
+            <div class="form-group">
+              <label>정원</label>
+              <input type="number" id="cfg-program-max-${i}" min="1" max="999" value="${program.max}" />
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="muted-text">※ 접수 마감은 입력한 값 기준으로 모든 기수에 동일 적용됩니다. 예: 14 입력 시 체험일 14일 전부터 마감됩니다.</div>
+      <div class="muted-text">※ 설정을 저장하면 즉시 신청 페이지와 관리자 페이지에 반영됩니다. 기존 신청 데이터는 유지되지만, 기수/프로그램 구조를 크게 바꾸면 기존 신청 데이터 표시가 달라질 수 있습니다.</div>
+
+      <div class="config-actions">
+        <button class="btn btn-primary" onclick="saveAdminSettings()">설정 저장</button>
+        <button class="btn" onclick="resetAdminSettings()">되돌리기</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderAdminPasswordBox() {
+  const box = document.getElementById('admin-password-box');
+  if (!box) return;
+
+  box.innerHTML = `
+    <div class="card">
+      <div class="card-title">관리자 비밀번호 변경</div>
+      <div class="form-group">
+        <label>현재 비밀번호</label>
+        <input type="password" id="admin-current-pw" placeholder="현재 비밀번호 입력" />
+      </div>
+      <div class="form-group">
+        <label>새 비밀번호</label>
+        <input type="password" id="admin-new-pw" placeholder="새 비밀번호 (6자 이상)" />
+      </div>
+      <div class="form-group">
+        <label>새 비밀번호 확인</label>
+        <input type="password" id="admin-new-pw2" placeholder="새 비밀번호 다시 입력" />
+      </div>
+      <div id="admin-password-alert"></div>
+      <button class="btn btn-primary" onclick="changeAdminPassword()">비밀번호 변경</button>
+    </div>
+  `;
+}
+
+window.changeAdminPassword = async function() {
+  const alertBox = document.getElementById('admin-password-alert');
+  const currentPw = document.getElementById('admin-current-pw').value;
+  const newPw = document.getElementById('admin-new-pw').value;
+  const newPw2 = document.getElementById('admin-new-pw2').value;
+
+  alertBox.innerHTML = '';
+
+  if (!currentUser || !isAdmin) {
+    alertBox.innerHTML = `<div class="alert alert-error">관리자 로그인 상태에서만 변경할 수 있습니다.</div>`;
+    return;
+  }
+
+  if (!currentPw) {
+    alertBox.innerHTML = `<div class="alert alert-error">현재 비밀번호를 입력해주세요.</div>`;
+    return;
+  }
+
+  if (!newPw) {
+    alertBox.innerHTML = `<div class="alert alert-error">새 비밀번호를 입력해주세요.</div>`;
+    return;
+  }
+
+  if (newPw.length < 6) {
+    alertBox.innerHTML = `<div class="alert alert-error">새 비밀번호는 6자 이상이어야 합니다.</div>`;
+    return;
+  }
+
+  if (newPw !== newPw2) {
+    alertBox.innerHTML = `<div class="alert alert-error">새 비밀번호와 비밀번호 확인이 일치하지 않습니다.</div>`;
+    return;
+  }
+
+  if (currentPw === newPw) {
+    alertBox.innerHTML = `<div class="alert alert-error">새 비밀번호는 현재 비밀번호와 다르게 입력해주세요.</div>`;
+    return;
+  }
+
+  try {
+    const user = auth.currentUser;
+    const credential = EmailAuthProvider.credential(user.email, currentPw);
+
+    await reauthenticateWithCredential(user, credential);
+    await updatePassword(user, newPw);
+
+    document.getElementById('admin-current-pw').value = '';
+    document.getElementById('admin-new-pw').value = '';
+    document.getElementById('admin-new-pw2').value = '';
+
+    alertBox.innerHTML = `<div class="alert alert-success">관리자 비밀번호가 변경되었습니다.</div>`;
+  } catch (error) {
+    let message = '비밀번호 변경 중 오류가 발생했습니다.';
+
+    if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+      message = '현재 비밀번호가 올바르지 않습니다.';
+    } else if (error.code === 'auth/weak-password') {
+      message = '새 비밀번호는 더 강하게 설정해주세요.';
+    } else if (error.code === 'auth/too-many-requests') {
+      message = '시도가 너무 많습니다. 잠시 후 다시 시도해주세요.';
+    } else if (error.code === 'auth/requires-recent-login') {
+      message = '보안을 위해 다시 로그인한 후 시도해주세요.';
+    }
+
+    alertBox.innerHTML = `<div class="alert alert-error">${message}</div>`;
+  }
+};
+
+window.updateAdminPeriodCount = function() {
+  syncAdminDraftFromInputs();
+  const input = document.getElementById('cfg-period-count');
+  let count = parseInt(input.value, 10) || 1;
+  count = Math.min(12, Math.max(1, count));
+  resizePeriods(count);
+  renderAdminConfigEditor();
+};
+
+window.updateAdminProgramCount = function() {
+  syncAdminDraftFromInputs();
+  const input = document.getElementById('cfg-program-count');
+  let count = parseInt(input.value, 10) || 1;
+  count = Math.min(12, Math.max(1, count));
+  resizePrograms(count);
+  renderAdminConfigEditor();
+};
+
+window.resetAdminSettings = function() {
+  adminConfigDraft = JSON.parse(JSON.stringify(appConfig));
+  renderAdminConfigEditor();
+};
+
+window.saveAdminSettings = async function() {
+  syncAdminDraftFromInputs();
+  const alertEl = document.getElementById('admin-config-alert');
+
+  if (adminConfigDraft.closeDaysBefore < 0) {
+    alertEl.innerHTML = `<div class="alert alert-error">접수 마감 기준일은 0 이상으로 입력해주세요.</div>`;
+    return;
+  }
+
+  for (let i = 0; i < adminConfigDraft.periods.length; i++) {
+    const period = adminConfigDraft.periods[i];
+    if (!period.label.trim()) {
+      alertEl.innerHTML = `<div class="alert alert-error">${i + 1}번째 기수 이름을 입력해주세요.</div>`;
+      return;
+    }
+    if (!period.date) {
+      alertEl.innerHTML = `<div class="alert alert-error">${period.label || (i + 1) + '기'}의 체험일을 입력해주세요.</div>`;
+      return;
+    }
+  }
+
+  for (let i = 0; i < adminConfigDraft.programs.length; i++) {
+    const program = adminConfigDraft.programs[i];
+    if (!program.name.trim()) {
+      alertEl.innerHTML = `<div class="alert alert-error">${i + 1}번째 프로그램 제목을 입력해주세요.</div>`;
+      return;
+    }
+    if (!program.max || program.max < 1) {
+      alertEl.innerHTML = `<div class="alert alert-error">${program.name || (i + 1) + '번째 프로그램'}의 정원을 1명 이상으로 입력해주세요.</div>`;
+      return;
+    }
+  }
+
+  const normalized = normalizeConfig(adminConfigDraft);
+
+  try {
+    await setDoc(doc(db, 'siteConfig', 'main'), normalized);
+    appConfig = normalized;
+    adminConfigDraft = JSON.parse(JSON.stringify(appConfig));
+    configLoaded = true;
+
+    if (!getPeriodById(selectedPeriod)) selectedPeriod = getPeriods()[0]?.id || '1';
+    if (selectedProgram && !getProgramById(selectedProgram)) selectedProgram = null;
+    if (adminPeriodFilter !== 'all' && !getPeriodById(adminPeriodFilter)) adminPeriodFilter = 'all';
+    if (adminProgFilter !== 'all' && !getProgramById(adminProgFilter)) adminProgFilter = 'all';
+
+    alertEl.innerHTML = `<div class="alert alert-success">운영 설정이 저장되었습니다.</div>`;
+
+    if (document.getElementById('page-home').classList.contains('active')) {
+      await initHome();
+    }
+    await initAdmin();
+  } catch (e) {
+    alertEl.innerHTML = `<div class="alert alert-error">설정 저장 중 오류가 발생했습니다.</div>`;
+  }
+};
+
+async function initAdmin() {
+  await ensureConfigLoaded();
+  await loadApplications();
+  renderAdmin();
+}
+
+function renderAdmin() {
+  renderAdminPasswordBox();
+  renderAdminConfigEditor();
+
+  const apps = allApplications;
+  const periodStats = getPeriods().map(period =>
+    `<div class="stat-card"><div class="stat-label">${escapeHtml(period.label)}</div><div class="stat-value">${apps.filter(app => app.periodId === period.id).length}</div></div>`
+  ).join('');
+
+  document.getElementById('admin-stats').innerHTML =
+    `<div class="stat-card"><div class="stat-label">전체</div><div class="stat-value">${apps.length}</div></div>` +
+    periodStats;
+
+  document.getElementById('admin-period-tabs').innerHTML =
+    `<div class="tab ${adminPeriodFilter === 'all' ? 'active' : ''}" onclick="setAdminFilter('period','all')">전체 기수</div>` +
+    getPeriods().map(period =>
+      `<div class="tab ${adminPeriodFilter === period.id ? 'active' : ''}" onclick="setAdminFilter('period','${period.id}')">${escapeHtml(period.label)}</div>`
+    ).join('');
+
+  document.getElementById('admin-prog-tabs').innerHTML =
+    `<div class="tab ${adminProgFilter === 'all' ? 'active' : ''}" onclick="setAdminFilter('prog','all')">전체 프로그램</div>` +
+    getPrograms().map(program =>
+      `<div class="tab ${adminProgFilter === program.id ? 'active' : ''}" onclick="setAdminFilter('prog','${program.id}')">${program.id}: ${escapeHtml(program.name)}</div>`
+    ).join('');
+
+  let filtered = apps;
+  if (adminPeriodFilter !== 'all') filtered = filtered.filter(app => app.periodId === adminPeriodFilter);
+  if (adminProgFilter !== 'all') filtered = filtered.filter(app => app.progId === adminProgFilter);
+
+  const tbody = document.getElementById('admin-tbody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:var(--text-muted);padding:24px">신청 내역이 없습니다.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map((appItem, i) => {
+    const period = getPeriodById(appItem.periodId);
+    const program = getProgramById(appItem.progId);
+    const date = appItem.createdAt ? new Date(appItem.createdAt.seconds * 1000).toLocaleDateString('ko-KR') : '-';
+
+    return `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${escapeHtml(appItem.name)}</td>
+        <td>${escapeHtml(appItem.region)}</td>
+        <td>${escapeHtml(appItem.school)}</td>
+        <td>${escapeHtml(appItem.phone)}</td>
+        <td>${period ? escapeHtml(period.label) : '-'}</td>
+        <td>${program ? program.id + ': ' + escapeHtml(program.name) : '-'}</td>
+        <td><div class="admin-note">${escapeHtml(appItem.etcNote || '')}</div></td>
+        <td>${date}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="adminDelete('${appItem.id}')">삭제</button></td>
+      </tr>
+    `;
+  }).join('');
+}
+
+window.setAdminFilter = function(type, val) {
+  if (type === 'period') adminPeriodFilter = val;
+  else adminProgFilter = val;
+  renderAdmin();
+};
+
+window.adminDelete = async function(docId) {
+  if (!confirm('해당 신청을 삭제하시겠습니까?')) return;
+  await deleteDoc(doc(db, 'applications', docId));
+  await initAdmin();
+};
+
+window.downloadCSV = function() {
+  if (allApplications.length === 0) {
+    alert('다운로드할 데이터가 없습니다.');
+    return;
+  }
+
+  const header = ['번호', '이름', '지역', '소속학교', '연락처', '기', '날짜', '프로그램', '기타(문의사항등)', '신청일'];
+  const rows = allApplications.map((appItem, i) => {
+    const period = getPeriodById(appItem.periodId);
+    const program = getProgramById(appItem.progId);
+    const date = appItem.createdAt ? new Date(appItem.createdAt.seconds * 1000).toLocaleDateString('ko-KR') : '-';
+
+    return [
+      i + 1,
+      appItem.name,
+      appItem.region,
+      appItem.school,
+      appItem.phone,
+      period?.label || '-',
+      period ? formatDisplayDate(period.date) : '-',
+      program ? `${program.id}: ${program.name}` : '-',
+      appItem.etcNote || '',
+      date
+    ].map(csvEscape).join(',');
+  });
+
+  const csv = '\uFEFF' + [header.map(csvEscape).join(','), ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const el = document.createElement('a');
+  el.href = url;
+  el.download = '체험학습_신청자명단.csv';
+  el.click();
+  URL.revokeObjectURL(url);
+};
+
+window.showPage(getSavedPage(), false);
+</script>
+</body>
+</html>
