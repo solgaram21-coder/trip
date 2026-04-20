@@ -423,11 +423,12 @@
   }
 
   .hero {
-    background: linear-gradient(135deg, var(--primary) 0%, #1976d2 100%);
+    background: var(--card);
+    border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 40px 24px 36px;
     margin-bottom: 20px;
-    color: #fff;
+    color: var(--text);
     text-align: center;
   }
 
@@ -436,11 +437,13 @@
     font-weight: 700;
     margin-bottom: 12px;
     letter-spacing: -0.5px;
+    color: var(--text);
   }
 
   .hero-sub {
     font-size: 14px;
-    opacity: 0.9;
+    color: var(--text-muted);
+    opacity: 1;
     line-height: 1.8;
     margin-bottom: 28px;
   }
@@ -449,28 +452,30 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: #fff;
-    color: var(--primary);
+    background: var(--primary);
+    color: #fff;
     font-size: 17px;
     font-weight: 700;
     padding: 14px 40px;
     border-radius: 40px;
-    border: none;
+    border: 1px solid var(--primary);
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+    box-shadow: none;
     transition: all 0.15s;
     font-family: inherit;
   }
 
   .hero-login-btn:hover {
-    background: #eef3ff;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: none;
   }
 
   .hero-logged {
     font-size: 13px;
-    opacity: 0.9;
+    color: var(--text-muted);
+    opacity: 1;
     margin-top: 8px;
   }
 
@@ -484,7 +489,7 @@
     width: 26px;
     height: 26px;
     object-fit: contain;
-    border-radius: 50%;
+    border-radius: 0;
     flex-shrink: 0;
   }
 
@@ -492,11 +497,11 @@
     width: 92px;
     height: 92px;
     object-fit: contain;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.08);
-    padding: 4px;
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
     margin-bottom: 14px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+    box-shadow: none;
   }
 
 
@@ -782,7 +787,7 @@ const DEFAULT_CONFIG = {
   ]
 };
 
-const ADMIN_EMAIL = 'ryurim92@gmail.com';
+const ADMIN_EMAIL = 'solgaram21@gmail.com';
 const PAGE_NAMES = ['home', 'login', 'signup', 'mypage', 'edit', 'admin'];
 const SAFE_RESTORE_PAGES = ['home', 'login', 'signup', 'mypage', 'admin'];
 const PAGE_STORAGE_KEY = 'fieldtrip_current_page';
