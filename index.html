@@ -386,7 +386,7 @@
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
-    min-width: 1120px;
+    min-width: 1320px;
   }
 
   th {
@@ -665,7 +665,7 @@
           <strong>□ 개인정보의 수집·이용 목적</strong><br>
           솔가람고등학교 공방 체험학습 신청 접수 및 운영 관리<br><br>
           <strong>□ 수집 항목</strong><br>
-          성명, 재적교, 연락처, 지역, 기타 문의사항 등<br><br>
+          성명, 재적교, 학생연락처, 보호자연락처1, 보호자연락처2, 지역, 기타 문의사항 등<br><br>
           <strong>□ 개인정보 보유 및 이용 기간</strong><br>
           2027년 신입생 입학전형 실시 후 1개월 이내 폐기<br><br>
           ※ 동의를 거부할 수 있으나, 거부 시 공방 체험학습에 참가하실 수 없습니다.
@@ -721,7 +721,9 @@
               <th>이름</th>
               <th>지역</th>
               <th>소속학교</th>
-              <th>연락처</th>
+              <th>학생연락처</th>
+              <th>보호자연락처1</th>
+              <th>보호자연락처2</th>
               <th>기</th>
               <th>프로그램</th>
               <th>기타(문의사항등)</th>
@@ -864,10 +866,33 @@ function isValidPhoneNumber(value) {
   return /^010-\d{4}-\d{4}$/.test(String(value || ''));
 }
 
-function getApplicationValidationErrors({ name, region, school, phone }) {
+function getPhoneDisplay(appItem, key) {
+  if (!appItem) return '';
+  if (key === 'studentPhone') return appItem.studentPhone || appItem.phone || '';
+  return appItem[key] || '';
+}
+
+function validatePhoneField(errors, fieldName, label, value, required = true) {
+  const text = String(value || '').trim();
+  const digits = text.replace(/\D/g, '');
+
+  if (!text) {
+    if (required) errors[fieldName] = `${label}를 입력해주세요.`;
+    return;
+  }
+
+  if (!digits.startsWith('010')) {
+    errors[fieldName] = `${label}는 010으로 시작해야 합니다.`;
+  } else if (digits.length !== 11) {
+    errors[fieldName] = `${label}는 숫자 11자리를 모두 입력해주세요.`;
+  } else if (!isValidPhoneNumber(text)) {
+    errors[fieldName] = `${label} 형식은 010-1234-1234 입니다.`;
+  }
+}
+
+function getApplicationValidationErrors({ name, region, school, studentPhone, parentPhone1, parentPhone2 }) {
   const errors = {};
   const allowedRegions = ['광주', '전남', '그외'];
-  const phoneDigits = String(phone || '').replace(/\D/g, '');
 
   if (!String(name || '').trim()) {
     errors.name = '이름을 입력해주세요.';
@@ -883,15 +908,9 @@ function getApplicationValidationErrors({ name, region, school, phone }) {
     errors.school = '소속학교를 입력해주세요.';
   }
 
-  if (!String(phone || '').trim()) {
-    errors.phone = '연락처를 입력해주세요.';
-  } else if (!phoneDigits.startsWith('010')) {
-    errors.phone = '연락처는 010으로 시작해야 합니다.';
-  } else if (phoneDigits.length !== 11) {
-    errors.phone = '연락처는 숫자 11자리를 모두 입력해주세요.';
-  } else if (!isValidPhoneNumber(phone)) {
-    errors.phone = '연락처 형식은 010-1234-1234 입니다.';
-  }
+  validatePhoneField(errors, 'studentPhone', '학생연락처', studentPhone, true);
+  validatePhoneField(errors, 'parentPhone1', '보호자연락처1', parentPhone1, true);
+  validatePhoneField(errors, 'parentPhone2', '보호자연락처2', parentPhone2, false);
 
   return errors;
 }
@@ -901,7 +920,9 @@ function getFormFieldMap(prefix) {
     name: { inputId: `${prefix}-name`, errorId: `${prefix}-name-error` },
     region: { inputId: `${prefix}-region`, errorId: `${prefix}-region-error` },
     school: { inputId: `${prefix}-school`, errorId: `${prefix}-school-error` },
-    phone: { inputId: `${prefix}-phone`, errorId: `${prefix}-phone-error` }
+    studentPhone: { inputId: `${prefix}-student-phone`, errorId: `${prefix}-student-phone-error` },
+    parentPhone1: { inputId: `${prefix}-parent-phone1`, errorId: `${prefix}-parent-phone1-error` },
+    parentPhone2: { inputId: `${prefix}-parent-phone2`, errorId: `${prefix}-parent-phone2-error` }
   };
 }
 
@@ -976,7 +997,7 @@ function attachFieldRecoveryHandlers(scope, prefix) {
 }
 
 function attachPhoneFormatter(scope = document) {
-  const targets = scope.querySelectorAll('#f-phone, #e-phone');
+  const targets = scope.querySelectorAll('#f-student-phone, #f-parent-phone1, #f-parent-phone2, #e-student-phone, #e-parent-phone1, #e-parent-phone2');
 
   targets.forEach(input => {
     if (input.dataset.phoneBound === '1') return;
@@ -1381,9 +1402,21 @@ function renderPrograms() {
           </div>
 
           <div class="form-group">
-            <label>연락처 *</label>
-            <input type="text" id="f-phone" placeholder="010-0000-0000" inputmode="numeric" maxlength="13"/>
-            <div class="field-error" id="f-phone-error"></div>
+            <label>학생연락처 *</label>
+            <input type="text" id="f-student-phone" placeholder="010-0000-0000" inputmode="numeric" maxlength="13"/>
+            <div class="field-error" id="f-student-phone-error"></div>
+          </div>
+
+          <div class="form-group">
+            <label>보호자연락처1 *</label>
+            <input type="text" id="f-parent-phone1" placeholder="010-0000-0000" inputmode="numeric" maxlength="13"/>
+            <div class="field-error" id="f-parent-phone1-error"></div>
+          </div>
+
+          <div class="form-group">
+            <label>보호자연락처2</label>
+            <input type="text" id="f-parent-phone2" placeholder="010-0000-0000" inputmode="numeric" maxlength="13"/>
+            <div class="field-error" id="f-parent-phone2-error"></div>
           </div>
 
           <div class="form-group">
@@ -1414,11 +1447,13 @@ window.submitApplication = async function() {
   const name = document.getElementById('f-name').value.trim();
   const region = document.getElementById('f-region').value;
   const school = document.getElementById('f-school').value.trim();
-  const phone = document.getElementById('f-phone').value.trim();
+  const studentPhone = document.getElementById('f-student-phone').value.trim();
+  const parentPhone1 = document.getElementById('f-parent-phone1').value.trim();
+  const parentPhone2 = document.getElementById('f-parent-phone2').value.trim();
   const etcNote = document.getElementById('f-etcNote').value.trim();
   const al = document.getElementById('home-alert');
 
-  const errors = getApplicationValidationErrors({ name, region, school, phone });
+  const errors = getApplicationValidationErrors({ name, region, school, studentPhone, parentPhone1, parentPhone2 });
   const hasValidationError = applyFieldValidation('f', errors);
   if (hasValidationError) return;
 
@@ -1442,7 +1477,10 @@ window.submitApplication = async function() {
       name,
       region,
       school,
-      phone,
+      studentPhone,
+      parentPhone1,
+      parentPhone2,
+      phone: studentPhone,
       etcNote,
       periodId: selectedPeriod,
       progId: selectedProgram,
@@ -1494,7 +1532,9 @@ async function renderMypage() {
       <div class="info-row"><span class="info-label">이름</span><span class="info-value">${escapeHtml(appItem.name)}</span></div>
       <div class="info-row"><span class="info-label">지역</span><span class="info-value">${escapeHtml(appItem.region)}</span></div>
       <div class="info-row"><span class="info-label">소속학교</span><span class="info-value">${escapeHtml(appItem.school)}</span></div>
-      <div class="info-row"><span class="info-label">연락처</span><span class="info-value">${escapeHtml(appItem.phone)}</span></div>
+      <div class="info-row"><span class="info-label">학생연락처</span><span class="info-value">${escapeHtml(getPhoneDisplay(appItem, 'studentPhone'))}</span></div>
+      <div class="info-row"><span class="info-label">보호자연락처1</span><span class="info-value">${escapeHtml(getPhoneDisplay(appItem, 'parentPhone1'))}</span></div>
+      <div class="info-row"><span class="info-label">보호자연락처2</span><span class="info-value">${escapeHtml(getPhoneDisplay(appItem, 'parentPhone2') || '-')}</span></div>
       <div class="info-row"><span class="info-label">기타</span><span class="info-value-note">${etcNoteHtml}</span></div>
       <div class="info-row"><span class="info-label">신청일</span><span class="info-value">${date}</span></div>
       <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;">
@@ -1575,9 +1615,21 @@ window.showEditPage = async function(docId) {
       </div>
 
       <div class="form-group">
-        <label>연락처 *</label>
-        <input type="text" id="e-phone" value="${formatPhoneNumber(appItem.phone)}" inputmode="numeric" maxlength="13"/>
-        <div class="field-error" id="e-phone-error"></div>
+        <label>학생연락처 *</label>
+        <input type="text" id="e-student-phone" value="${formatPhoneNumber(getPhoneDisplay(appItem, 'studentPhone'))}" inputmode="numeric" maxlength="13"/>
+        <div class="field-error" id="e-student-phone-error"></div>
+      </div>
+
+      <div class="form-group">
+        <label>보호자연락처1 *</label>
+        <input type="text" id="e-parent-phone1" value="${formatPhoneNumber(getPhoneDisplay(appItem, 'parentPhone1'))}" inputmode="numeric" maxlength="13"/>
+        <div class="field-error" id="e-parent-phone1-error"></div>
+      </div>
+
+      <div class="form-group">
+        <label>보호자연락처2</label>
+        <input type="text" id="e-parent-phone2" value="${formatPhoneNumber(getPhoneDisplay(appItem, 'parentPhone2'))}" inputmode="numeric" maxlength="13"/>
+        <div class="field-error" id="e-parent-phone2-error"></div>
       </div>
 
       <div class="form-group">
@@ -1605,10 +1657,12 @@ window.saveEdit = async function(docId) {
   const name = document.getElementById('e-name').value.trim();
   const region = document.getElementById('e-region').value;
   const school = document.getElementById('e-school').value.trim();
-  const phone = document.getElementById('e-phone').value.trim();
+  const studentPhone = document.getElementById('e-student-phone').value.trim();
+  const parentPhone1 = document.getElementById('e-parent-phone1').value.trim();
+  const parentPhone2 = document.getElementById('e-parent-phone2').value.trim();
   const etcNote = document.getElementById('e-etcNote').value.trim();
 
-  const errors = getApplicationValidationErrors({ name, region, school, phone });
+  const errors = getApplicationValidationErrors({ name, region, school, studentPhone, parentPhone1, parentPhone2 });
   const hasValidationError = applyFieldValidation('e', errors);
   if (hasValidationError) return;
 
@@ -1635,7 +1689,10 @@ window.saveEdit = async function(docId) {
     name,
     region,
     school,
-    phone,
+    studentPhone,
+    parentPhone1,
+    parentPhone2,
+    phone: studentPhone,
     etcNote
   });
 
@@ -1998,7 +2055,7 @@ function renderAdmin() {
 
   const tbody = document.getElementById('admin-tbody');
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:var(--text-muted);padding:24px">신청 내역이 없습니다.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;color:var(--text-muted);padding:24px">신청 내역이 없습니다.</td></tr>`;
     return;
   }
 
@@ -2013,7 +2070,9 @@ function renderAdmin() {
         <td>${escapeHtml(appItem.name)}</td>
         <td>${escapeHtml(appItem.region)}</td>
         <td>${escapeHtml(appItem.school)}</td>
-        <td>${escapeHtml(appItem.phone)}</td>
+        <td>${escapeHtml(getPhoneDisplay(appItem, 'studentPhone'))}</td>
+        <td>${escapeHtml(getPhoneDisplay(appItem, 'parentPhone1'))}</td>
+        <td>${escapeHtml(getPhoneDisplay(appItem, 'parentPhone2'))}</td>
         <td>${period ? escapeHtml(period.label) : '-'}</td>
         <td>${program ? program.id + ': ' + escapeHtml(program.name) : '-'}</td>
         <td><div class="admin-note">${escapeHtml(appItem.etcNote || '')}</div></td>
@@ -2042,7 +2101,7 @@ window.downloadCSV = function() {
     return;
   }
 
-  const header = ['번호', '이름', '지역', '소속학교', '연락처', '기', '날짜', '프로그램', '기타(문의사항등)', '신청일'];
+  const header = ['번호', '이름', '지역', '소속학교', '학생연락처', '보호자연락처1', '보호자연락처2', '기', '날짜', '프로그램', '기타(문의사항등)', '신청일'];
   const rows = allApplications.map((appItem, i) => {
     const period = getPeriodById(appItem.periodId);
     const program = getProgramById(appItem.progId);
